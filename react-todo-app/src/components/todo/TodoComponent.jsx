@@ -19,8 +19,8 @@ function TodoComponent() {
     const username = authContext.username;
 
     useEffect( 
-        () => retrieveTodos() 
-    );
+        () => retrieveTodos(), [id] 
+    )
 
     function retrieveTodos(){
         if(id != -1) {
@@ -46,18 +46,18 @@ function TodoComponent() {
         if(id == -1){
             createTodoApi(username, todo)
             .then( response => {
+                console.log(response)
+                navigate('/todos')
+            })
+            .catch( error => console.log(error))
+        } else {
+            updateTodoApi(username, id, todo)
+            .then( response => {
                 //console.log(response)
                 navigate('/todos')
             })
             .catch( error => console.log(error))
-            return
         }
-        updateTodoApi(username, id, todo)
-        .then( response => {
-            //console.log(response)
-            navigate('/todos')
-        })
-        .catch( error => console.log(error))
     }
 
     function validate(values){
@@ -68,7 +68,7 @@ function TodoComponent() {
         if(values.description.length < 5){
             errors.description = 'Enter at least 5 characters in description';
         }
-        if(values.targetDate == null || values.targetDate == '' || !moment(values.targetDate).isValid()){
+        if(values.targetDate === null || values.targetDate === '' || !moment(values.targetDate).isValid()){
             errors.targetDate = 'Enter a target date';
         }
         console.log(values);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import { retrieveAllTodosForUsernameApi, deleteTodoApi } from "./api/TodoAPIService";
 import { useAuth } from "./security/AuthContext";
@@ -19,24 +19,18 @@ function ListTodosComponent() {
   const [message, setMessage] = useState(null)
 
 
-  // const refreshTodos = useCallback(() => {
-  //     retrieveAllTodosForUsernameApi(username)
-  //     .then(response => setTodos(response.data))
-  //     .catch(error => console.log(error))
-  //     .finally(() => console.log('cleanup'));  
-  //     }, [username]);
+  const refreshTodos = useCallback(() => {
+      retrieveAllTodosForUsernameApi(username)
+      .then(response => setTodos(response.data))
+      .catch(error => console.log(error)) 
+      }, [username]);
 
-      useEffect( 
-        () => refreshTodos()
+    useEffect( 
+        () => {
+          refreshTodos();
+        }, [username, refreshTodos]
     );
 
-    function refreshTodos() {
-      retrieveAllTodosForUsernameApi(username)
-      .then(response => {
-        setTodos(response.data)
-      })
-      .catch(error => console.log(error))
-    }
   function deleteTodo(id) {
     console.log("clicked " + id);
     deleteTodoApi(username, id)
@@ -51,12 +45,10 @@ function ListTodosComponent() {
   function updateTodo(id) {
     console.log("clicked" + id);
     navigate(`/todo/${id}`);
-    //setMessage(`Todo ID = ${id} Successfully Updated!`);
   }
 
   function addNewTodo() {
     navigate(`/todo/-1`);
-    //setMessage(`Todo ID = ${id} Successfully Updated!`);
   }
 
   return (
